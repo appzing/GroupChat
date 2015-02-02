@@ -1,0 +1,31 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#container{
+	width:1400;
+	margin:0 auto;
+}
+
+#board{
+	width:800px;
+	margin:0 auto;
+	border: 2px solid black;
+	height:400px;
+}
+
+textarea{
+	margin-left: 230px;
+	border:2px solid gray;
+}
+
+.submit{
+	width:100px;
+	height:60px;
+	margin-left: 230px;
+}

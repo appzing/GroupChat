@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<style type="text/css">
+		body{
+			padding:0;
+			margin:0;
+		}
+		
+		.chat{
+			background-image: url('../images/chat.jpg');		
+			text-align: center;
+			font-size: 3em;
+			font-family: Papyrus, fantasy;
+			color:#7f0b4f;	
+
+			
+		}
+		.text{
+			border:2px solid #5cb85c;
+			border-top-left-radius: 5px;
+			border-bottom-left-radius: 5px;
+			margin-right: 0;
+
+		}
+		.border{
+			border: 2px solid yellow;
+		}
+		#board{
+			width:1140px;	
+			border:none;		
+			background-color: white;
+			padding-top: 20px;
+		}
+		
+		.subbtn{
+			width:165px;
+			height:176px;
+			margin-left: 30px;
+			padding: 0;
+			font-size: 20px;
+			font-family: verdana;
+			font-weight: bold;
+		}
+
+		p{
+			font-family: Papyrus, fantasy;
+			color:white;
+			
+		}
+
+		.color1 {
+			background-color: #40B1FF;
+		}
+
+		.color2 {
+			background-color: #FFD64A;
+		}
+
+		.color3 {
+			background-color: #fd6967;
+		}
+		.color4 {
+					background-color: #8596C2;
+				}
+		.color5 {
+					background-color: #F2952B;
+				}
+		.color6 {
+					background-color: #99CA6F;
+				}
+
+	</style>
+	<script type="text/javascript">
+		
+		
+	</script>
+  </head>
+  <body>  
+    <div class="container">
+    	<div class="jumbotron chat"> <h1>GroupChat</h1>
+    	</div>
+    	<div class="row">
+				<div class="col-lg-12">
+					<h3>Open the page in another window or tab and see how you can chat...</h3>
+	    		</div>
+		</div>
+    	<form> 
+	    	<div class="row">
+	    		<div class="col-lg-12">
+	    			<div class="input-group">
+	     				 <textarea rows=8 cols=135 id='message' class=" form-control text" placeholder='Enter your message here'></textarea>
+	      					<span class="input-group-btn">
+	        					<input type='submit' class="btn btn-success subbtn" value="Submit">
+	      					</span>
+			    </div><!-- /input-group -->
+			  </div><!-- /.col-lg-6 -->
+			</div><!-- /.row -->
+		</form>
+		
+	    <div id="board" >
+	    	<div class="row">
+				<div class="col-lg-12">
+	    		</div>
+			</div>
+		</div>	
+    </div>
+  </body>
+  <script>
+
+
+	   	$(window).load(function() {
+	   			var col =['color1', 'color2', 'color3', 'color4', 'color5', 'color6'];
+//		   		var col =['#40B1FF','#FFD64A', '#fd6967','#8596C2', '#F2952B','#99CA6F'];
+			function randColor()
+			{
+
+				return col[Math.floor(Math.random()*6)];
+			}
+		
+		
+	   		var socket = io.connect();
+	   		$('#message').empty();
+
+			var name = prompt('What is your name?');
+
+			socket.emit('user_joined', { name: name});	
+			socket.on('current_users', function(messages){
+				for(x in messages) {
+					$('#board').append("<p class='well well-sm " + randColor() + "'>" + messages[x].name + ": " + messages[x].message + "</p>")				
+				}
+				 // $('form').append("<textarea rows=5 cols=100 id='message' placeholder='Enter your message here'></textarea><br><input type='submit' class='submit' value='Submit'>");
+				return false;
+			})	
+
+
+			$('form').submit(function (event){
+				var user_message = $('#message').val();
+				socket.emit('message', {name:name, user_message: user_message});
+				$('#board').append("<p class='well well-sm " + randColor() + "'>" + name + ": " + user_message + "</p>")
+				return false;
+			})
+
+			socket.on('new_user', function(msg){
+				 $('#board').append("<p class='well well-sm " + randColor() + "'>" + msg.name + ": " + msg.message + "</p>")
+			
+				return false;
+
+			})	
+			socket.on('new_message', function(msg){
+				 $('#board').append("<p class='well well-sm " + randColor() + "'>" + msg.name + ": " + msg.user_message + "</p>")			
+				return false;
+			})	
+			socket.on('user_left', function(msg){
+				 $('#board').append("<p class='well well-sm " + randColor() + "'>" + msg.name + ": " + msg.message + "</p>")			
+				return false;
+			})				
+		});
+
+	</script>
+
+</html>
