@@ -75,6 +75,15 @@
 		.color6 {
 					background-color: #99CA6F;
 				}
+		.panel{
+			margin-top:150px;
+			height:110px;
+			background-color: #CC465F;
+		}
+
+		.panel input , button{
+			margin-top: 20px;
+		}		
 
 	</style>
 	<script type="text/javascript">
@@ -82,34 +91,51 @@
 		
 	</script>
   </head>
-  <body>  
+  <body> 
+
     <div class="container">
     	<div class="jumbotron chat"> <h1>GroupChat</h1>
     	</div>
-    	<div class="row">
-				<div class="col-lg-12">
-					<h3>Open the page in another window or tab and see how you can chat...</h3>
-	    		</div>
-		</div>
-    	<form> 
+    	<div class="panel panel-default col-sm-offset-3 col-lg-6 login_panel">
+    		<div class="panel-body">
+    			<form>
+    				<div class="form-group">
+					    <div class="input-group">
+      						<input type="email" id="user_email" class="form-control" placeholder="Enter Email Address">
+						      <span class="input-group-btn">
+						        <button class="btn btn-primary" id="signin" type="button">Sign In!</button>
+						      </span>
+    					</div>
+					 </div>
+    			</form>	
+    		</div>
+    	</div>
+    	<div id="chatbody" class="hide">	
 	    	<div class="row">
-	    		<div class="col-lg-12">
-	    			<div class="input-group">
-	     				 <textarea rows=8 cols=135 id='message' class=" form-control text" placeholder='Enter your message here'></textarea>
-	      					<span class="input-group-btn">
-	        					<input type='submit' class="btn btn-success subbtn" value="Submit">
-	      					</span>
-			    </div><!-- /input-group -->
-			  </div><!-- /.col-lg-6 -->
-			</div><!-- /.row -->
-		</form>
-		
-	    <div id="board" >
-	    	<div class="row">
-				<div class="col-lg-12">
-	    		</div>
+					<div class="col-lg-12">
+						<h3>Open the page in another window or tab and see how you can chat...</h3>
+		    		</div>
 			</div>
-		</div>	
+	    	<form> 
+		    	<div class="row">
+		    		<div class="col-lg-12">
+		    			<div class="input-group">
+		     				 <textarea rows=8 cols=135 id='message' class=" form-control text" placeholder='Enter your message here'></textarea>
+		      					<span class="input-group-btn">
+		        					<input type='submit' class="btn btn-success subbtn" value="Submit">
+		      					</span>
+				    </div><!-- /input-group -->
+				  </div><!-- /.col-lg-6 -->
+				</div><!-- /.row -->
+			</form>
+			
+		    <div id="board" >
+		    	<div class="row">
+					<div class="col-lg-12">
+		    		</div>
+				</div>
+			</div>	
+		</div>
     </div>
   </body>
   <script>
@@ -118,19 +144,25 @@
 	   	$(window).load(function() {
 	   			var col =['color1', 'color2', 'color3', 'color4', 'color5', 'color6'];
 //		   		var col =['#40B1FF','#FFD64A', '#fd6967','#8596C2', '#F2952B','#99CA6F'];
+			var name; 
 			function randColor()
 			{
-
 				return col[Math.floor(Math.random()*6)];
 			}
-		
-		
+
 	   		var socket = io.connect();
 	   		$('#message').empty();
 
-			var name = prompt('What is your name?');
+	   		$("#signin").on("click", function() {
+				var name=$('#user_email').val();
+    			$('.login_panel').addClass('hide');
+    			$('#chatbody').removeClass('hide');
+    			socket.emit('user_joined', { name: name});	
+    			
+			});
+			//var name = prompt('What is your name?');
 
-			socket.emit('user_joined', { name: name});	
+			
 			socket.on('current_users', function(messages){
 				for(x in messages) {
 					$('#board').append("<p class='well well-sm " + randColor() + "'>" + messages[x].name + ": " + messages[x].message + "</p>")				
